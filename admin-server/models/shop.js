@@ -20,10 +20,6 @@ const shop = new mongoose.Schema({
         type:Number,
         require:true 
     },
-    title:{
-        type:String,
-        require:true
-    },
     goods:[
         {
             goodsname:{

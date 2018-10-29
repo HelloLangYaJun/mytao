@@ -91,6 +91,18 @@
         this.$axios.get('/user').then(res=>{
           if(res.code==200){
             this.islogin=true
+
+            function  socket(){
+              var goEasy = new GoEasy({appkey: 'BC-7d9035dedb414809ab92f67f049b8c46'});
+              goEasy.subscribe({
+                channel: res.data._id,
+                onMessage: function(message){
+                  Toast('你有一个新的消息')
+                  console.log(message)
+                }
+              });
+            }
+            socket()
           }
           else {
             this.islogin=false
@@ -118,6 +130,7 @@
     },
     created(){
       this.getlogin()
+
     }
   }
 </script>

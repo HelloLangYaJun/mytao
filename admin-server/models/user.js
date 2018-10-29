@@ -27,6 +27,34 @@ const user = new mongoose.Schema({
             ref:'order'
         }
     ],
+    chat:[
+        {
+            objectshop:{
+                type:mongoose.Schema.Types.ObjectId,
+                timestamps: {createAt: "createTime", updateAt: "updateTime"},
+                ref:'shop'
+            },
+            objectuser:{
+                type:mongoose.Schema.Types.ObjectId,
+                timestamps: {createAt: "createTime", updateAt: "updateTime"},
+                ref:'user'
+            },
+            content:{
+                    type:{
+                        type: Boolean,
+                        default: true,
+                        require:true,
+                    },
+                    content:{
+                        type: String,
+                        default: '',
+                        require:true, 
+                    } 
+            }
+               
+        }
+    ],
+
     collectshop:[
         {
            type:mongoose.Schema.Types.ObjectId,

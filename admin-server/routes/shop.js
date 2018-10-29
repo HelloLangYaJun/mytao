@@ -1,6 +1,7 @@
 const {Router} = require("express");
 const router = Router();
 const shop = require('../models/shop')
+var axios =require('axios')
 router.get('/',(req,res)=>{
     if(req.session.user){
       shop.find({}).then(data=>{
@@ -24,7 +25,6 @@ router.get('/',(req,res)=>{
       })
     }
   })
-  
   router.get('/:id',(req,res)=>{
     if(req.session.user){
     //    console.log(req.params.id) 

@@ -17,6 +17,7 @@ router.get('/',(req,res)=>{
         msg: '未登录'
     })
   }
+
 })
 
 //注册
@@ -50,6 +51,138 @@ router.post('/regist', (req, res) => {
             msg: '信息填写不完整'
         })
     }
+})
+
+//添加消息
+router.post('/addchat',(req,res)=>{
+    if(req.session.user){
+       let{userid,shopid,content,type}=req.body
+       let chat={
+        objectshop:shopid,
+        objectuser:userid,
+        content:{
+            type,
+            content,
+        }
+       }
+       user.update({_id:userid},{$push:{chat}}).then(data=>{
+           user.update({_id:shopid},{$push:{chat:{
+            objectshop:shopid,
+            objectuser:userid,
+            content:{
+                type:!type,
+                content,
+            }
+           }}}).then(data2=>{
+            res.json({
+                code: 200,
+                data2,
+                msg: '发送成功'
+            }) 
+           })
+       })
+    }
+    else{
+        res.json({
+            code: 400,
+            msg: '未登录'
+        })  
+    }
+})
+
+//添加或取消关注店铺
+router.post('/love',(req,res)=>{
+    if(req.session.user){
+       let {shopid,type}=req.body
+   if(type){
+    user.update({_id:req.session.user._id},{$push:{loveshop:shopid}}).then(
+        data=>{
+         res.json({
+             code: 200,
+             data,
+             msg: '添加成功'
+         })
+        }
+    ).catch(err=>{
+     res.json({
+         code: 400,
+         err,
+         msg: '添加失败'
+     })
+    })
+   }
+   else{
+    user.update({_id:req.session.user._id},{$pull:{loveshop:shopid}}).then(
+        data=>{
+         res.json({
+             code: 200,
+             data,
+             msg: '取消成功'
+         })
+        }
+    ).catch(err=>{
+     res.json({
+         code: 400,
+         err,
+         msg: '添加失败'
+     })
+    })
+   }
+    }
+    else{
+      res.json({
+          code: 400,
+          msg: '未登录'
+      })
+    }
+
+})
+//添加或取消收藏店铺
+router.post('/collection',(req,res)=>{
+    if(req.session.user){
+       let {shopid,type}=req.body
+   if(type){
+    user.update({_id:req.session.user._id},{$push:{collectshop:shopid}}).then(
+        data=>{
+         res.json({
+             code: 200,
+             data,
+             msg: '添加成功'
+         })
+        }
+    ).catch(err=>{
+     res.json({
+         code: 400,
+         err,
+         msg: '添加失败'
+     })
+    })
+   }
+   else{
+    user.update({_id:req.session.user._id},{$pull:{collectshop:shopid}}).then(
+        data=>{
+         res.json({
+             code: 200,
+             data,
+             msg: '取消成功'
+         })
+        }
+    ).catch(err=>{
+     res.json({
+         code: 400,
+         err,
+         msg: '添加失败'
+     })
+    })
+   }
+    }
+    else{
+      res.json({
+          code: 400,
+          msg: '未登录'
+      })
+    }
+
 })
 
 router.get('/logout',(req,res)=>{

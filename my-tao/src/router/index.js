@@ -8,7 +8,8 @@ const components= {
   goods: () => import('@/views/goods/index'),
   myinfo: () => import('@/views/myinfo/index'),
   login: () =>import('@/views/myinfo/login/index'),
-  openshop:()=>import('@/views/openshop/index')
+  openshop:()=>import('@/views/openshop/index'),
+  chat:()=>import('@/views/chat/index')
 }
 
 export default new Router({
@@ -42,6 +43,10 @@ export default new Router({
     {
       path:'/openshop',
       component: components.openshop,
+    },
+    {
+      path:'/chat',
+      component: components.chat,
     }
   ]
 })
