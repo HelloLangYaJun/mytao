@@ -13,7 +13,7 @@
             :src="props.active ? icon1.active : icon1.normal"
           >
         </van-tabbar-item>
-        <van-tabbar-item icon="chat"  info="15">
+        <van-tabbar-item icon="chat"  info="15" @click="gomessage">
           <span>消息</span>
           <img
             slot="icon"
@@ -84,25 +84,27 @@
         },
         isheader:true,
         islogin:false,
+        userinfo:{}
       }
     },
     methods:{
+      gomessage(){
+        this.$router.push('/message')
+      },
       getlogin(){
         this.$axios.get('/user').then(res=>{
           if(res.code==200){
             this.islogin=true
-
             function  socket(){
-              var goEasy = new GoEasy({appkey: 'BC-7d9035dedb414809ab92f67f049b8c46'});
               goEasy.subscribe({
                 channel: res.data._id,
                 onMessage: function(message){
                   Toast('你有一个新的消息')
-                  console.log(message)
                 }
               });
             }
             socket()
+            this.userinfo=res.data
           }
           else {
             this.islogin=false

@@ -9,7 +9,9 @@ const components= {
   myinfo: () => import('@/views/myinfo/index'),
   login: () =>import('@/views/myinfo/login/index'),
   openshop:()=>import('@/views/openshop/index'),
-  chat:()=>import('@/views/chat/index')
+  chat:()=>import('@/views/chat/index'),
+  message:()=>import('@/views/message/index'),
+  shops:()=>import('@/views/shops/index')
 }
 
 export default new Router({
@@ -29,12 +31,21 @@ export default new Router({
           path:'myinfo',
           component: components.myinfo,
           name: '个人信息'
+        },
+        {
+          path:'message',
+          component: components.message,
+          name: '消息盒子'
         }
       ]
     },
     {
       path:'/login',
       component: components.login,
+    },
+    {
+      path:'/shops',
+      component: components.shops,
     },
     {
       path:'/goods',

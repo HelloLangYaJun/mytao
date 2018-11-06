@@ -10,7 +10,7 @@
   <!--&lt;!&ndash; 引入组件 &ndash;&gt;-->
   <!--<script src="https://unpkg.com/vue/dist/vue.min.js"></script>-->
   <!--<script src="https://unpkg.com/vant/lib/vant.min.js"></script>-->
-  <script src="https://cdn.goeasy.io/goeasy.js"></script>
+  <script src="https://cdn-hangzhou.goeasy.io/goeasy.js"></script>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
@@ -21,5 +21,8 @@
       document.getElementsByTagName('html')[0].style.fontSize = scrren / 7.5 + "px"
     }
     setRem()
+    var goEasy = new GoEasy({
+      appkey: "BC-7d9035dedb414809ab92f67f049b8c46"
+    });
   </script>
 </html>

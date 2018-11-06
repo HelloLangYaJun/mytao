@@ -2,7 +2,8 @@
   <div class="goods">
     <van-swipe class="goods-swipe" :autoplay="3000">
       <van-swipe-item v-for="thumb in goods.shopimgs" :key="thumb">
-        <img :src="thumb" >
+
+        <img :src="thumb"  @click="lookimg(thumb)">
       </van-swipe-item>
     </van-swipe>
 
@@ -51,9 +52,30 @@
       :sku="sku"
       :goods="goods"
       :hide-stock="false"
+      :close-on-click-overlay="true"
       @buy-clicked="onBuyClicked"
       @add-cart="onAddCartClicked"
+      @stepper-change="changeBuyNum"
     />
+
+
+  <div class="openpasd" v-if="psdinput">
+    <div class="zhezhao" @click="openasd">
+    </div>
+    <!-- 密码输入框 -->
+    <van-password-input
+      :value="value"
+      info="请输入用户密码后六位"
+      @focus="showKeyboard = true"
+    />
+    <!-- 数字键盘 -->
+    <van-number-keyboard
+      :show="showKeyboard"
+      @input="onInput"
+      @delete="onDelete"
+      @blur="showKeyboard = true"
+    />
+  </div>
   </div>
 </template>
 
@@ -73,6 +95,9 @@ import {
 } from 'vant';
 import Vue from 'vue'
 import { Sku } from 'vant';
+import { ImagePreview } from 'vant';
+import { PasswordInput, NumberKeyboard } from 'vant';
+Vue.use(PasswordInput).use(NumberKeyboard);
 Vue.use(Sku);
 export default {
   components: {
@@ -90,6 +115,8 @@ export default {
 
   data() {
     return {
+      psdinput:false,
+      showKeyboard:true,
       userinfo:{},
       sku: {
         // 所有sku规格类目与其值的从属关系，比如商品有颜色和尺码两大类规格，颜色下面又有红色和蓝色两个规格值。
@@ -121,22 +148,59 @@ export default {
         price: '1.00', // 默认价格（单位元）
         none_sku: false, // 是否无规格商品
       },
+      value:'',
       islove:false,
       iscollection:false,
       showBase:false,
+      buyNum:1,
       goods: {
 
       },
+      skuData:{}
     };
   },
 
   methods: {
+    openasd(){
+      this.psdinput=!this.psdinput
+    },
+    onInput(key) {
+      this.value = (this.value + key).slice(0, 6);
+      if(this.value.length==6){
+        alert('ok')
+      }
+    },
+    onDelete() {
+      this.value = this.value.slice(0, this.value.length - 1);
+    },
+    lookimg(img){
+      ImagePreview([
+        img
+      ]);
+    },
     chat(){
-      this.$router.push({path:'/chat',query:{id:this.$route.query.id,shopname:this.goods.shopname}})
+      if(this.userinfo._id==this.goods.shopkeeper){
+        Toast('这是你自己的店')
+      }
+      else {
+        this.$axios.post('/user/addchatwin',{fromid:this.userinfo._id,toid:this.goods.shopkeeper,shopid:this.$route.query.id}).then(res=>{
+          if(res.code==200){
+            this.$router.push({path:'/chat',query:{id:this.$route.query.id,fromid:this.userinfo._id,toid:this.goods.shopkeeper,shopname:this.goods.shopname}})
+          }
+          else {
+            Toast(res.msg)
+          }
+        })
+      }
+    },
+    changeBuyNum(value){
+      this.buyNum=value
     },
     onBuyClicked(skuData){
-      console.log(skuData)
-
+      skuData.selectedSkuComb.num=this.buyNum
+      this.showBase=!this.showBase
+      this.psdinput=!this.psdinput
+      this.skuData=skuData
     },
     onAddCartClicked(){
 
@@ -192,6 +256,9 @@ export default {
             let obj={
               id: index, // skuId，下单时后端需要
               price: item.goodsprice*100, // 价格（单位分）
+              name:item.name,
+              trueprice:item.goodsprice,
+              // num:this.buyNum,
               s1:index.toString(), // 规格类目 k_s 为 s1 的对应规格值 id
               stock_num: 999 // 当前 sku 组合对应的库存
             }
@@ -250,6 +317,26 @@ export default {
 </script>
 
 <style  lang="scss">
+  .openpasd{
+    width: 7.5rem;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    position: fixed;
+    /*display: none;*/
+    .zhezhao{
+      width: 7.5rem;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: black;
+      opacity: .5;
+    }
+    /deep/.van-password-input__info{
+      color: white;
+    }
+  }
   .lookshop{
     width: .6rem;
     height: 20px;
@@ -292,7 +379,6 @@ export default {
       color: #999;
     }
   }
-
   &-tag {
     margin-left: 5px;
   }

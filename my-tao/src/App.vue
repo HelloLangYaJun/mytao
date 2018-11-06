@@ -17,12 +17,15 @@ export default {
   text-align: center;
   color: #2c3e50;
   min-height: 100vh;
-  background-color: #f8f8f8;
+  background-color: #f3f3f3;
 }
   *{
     margin: 0;
     padding: 0px;
     text-align: left;
     font-size: 14px;
+  }
+  span{
+    text-align: center;
   }
 </style>

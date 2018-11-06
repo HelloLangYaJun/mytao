@@ -2,8 +2,8 @@
   <div class="index-main">
 
     <div class="header">
-      <input type="text" class="shousuo">
-      <i class="shousuo-icon"></i>
+      <input type="text" class="shousuo" v-model="findstr">
+      <i class="shousuo-icon" @click="findshop()"></i>
     </div>
     <!--轮播图-->
     <div class="swiper">
@@ -24,7 +24,7 @@
 
         <div class="icon-item">
           <div class="item" v-for="(item,index) in mypindao" :key="index">
-            <div class="top-img">
+            <div class="top-img" @click="goshops(item.type)">
               <img :src="item.icon" alt="">
             </div>
             <p class="bottom">{{item.name}}</p>
@@ -56,7 +56,7 @@
 <script>
   import {Swipe, SwipeItem} from 'vant';
   import Vue from 'vue'
-  import { NoticeBar } from 'vant';
+  import { NoticeBar,Toast } from 'vant';
   Vue.use(NoticeBar);
   Vue.use(Swipe).use(SwipeItem);
   import icon1 from '../../assets/mypindao/天猫.svg'
@@ -75,26 +75,31 @@
     {
       icon: icon1,
       name:'天猫',
+      type:1,
       src:'/shop/tianmao'
     },
     {
       icon: icon2,
       name:'聚划算',
+      type:2,
       src:'/shop/juhuasuan'
     },
     {
       icon: icon3,
       name:'天猫国际',
+      type:3,
       src:'/shop/juhuasuan'
-    }, {
+    },
+    {
+      icon: icon5,
+      name:'淘抢购',
+      type:4,
+      src:'/shop/juhuasuan'
+    },{
       icon: icon4,
       name:'饿了么',
       src:'/shop/juhuasuan'
-    }, {
-      icon: icon5,
-      name:'淘抢购',
-      src:'/shop/juhuasuan'
-    }, {
+    },  {
       icon: icon6,
       name:'手机充值',
       src:'/shop/juhuasuan'
@@ -126,10 +131,22 @@
           'https://img.alicdn.com/tps/i4/TB1UXPJj9zqK1RjSZFpwu1kSXXa.png_q90_.webp'
         ],
         shops:[],
+        findstr:'',
         mypindao:pindao
       }
     },
     methods:{
+      findshop(){
+        this.$router.push({path:'/shops',query:{findstr:this.findstr}})
+      },
+      goshops(type){
+        if(type){
+          this.$router.push({path:'/shops',query:{type:type}})
+        }
+        else {
+          Toast('暂无功能')
+        }
+      },
       goshop(id){
         this.$router.push({path:'/goods',query:{id:id}})
       },
@@ -169,14 +186,14 @@
     }
     .shousuo-icon {
       display: block;
-      width: .4rem;
-      height: .4rem;
+      width: .6rem;
+      height: .6rem;
       position: absolute;
-      left: 5rem;
+      left: 4.9rem;
       top: .2rem;
       z-index: 99;
       background: url("../../assets/icon/shousuo.svg") no-repeat;
-      background-size: .4rem .5rem;
+      background-size: .6rem .6rem;
     }
   }
   //轮播图样式开始
@@ -260,13 +277,12 @@
 
       .item{
         width: 3.3rem;
-        height: 2.2rem;
+        height: 3.2rem;
         position: relative;
         float: left;
-        background-color: #00B7FF;
         img{
           width: 3.3rem;
-          height: 2.2rem;
+          height: 3.2rem;
         }
         p{
           position: absolute;

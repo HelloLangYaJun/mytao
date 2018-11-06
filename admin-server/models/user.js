@@ -29,43 +29,59 @@ const user = new mongoose.Schema({
     ],
     chat:[
         {
-            objectshop:{
+            //商店id
+            objectShop:{
                 type:mongoose.Schema.Types.ObjectId,
-                timestamps: {createAt: "createTime", updateAt: "updateTime"},
                 ref:'shop'
             },
-            objectuser:{
+            shop:{
+                type:Object
+            },
+            //发送人id
+            objectFrom:{
                 type:mongoose.Schema.Types.ObjectId,
-                timestamps: {createAt: "createTime", updateAt: "updateTime"},
                 ref:'user'
             },
-            content:{
+            From:{
+                type:Object
+            },
+             //接收人id
+            objectTo:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'user'
+            },
+            To:{
+                type:Object
+            },
+            //未接收信息
+            noLooknum:{
+                type: Number,
+                default:0,
+            },
+            content:[
+                {
                     type:{
-                        type: Boolean,
-                        default: true,
-                        require:true,
+                        type:Boolean,
                     },
-                    content:{
-                        type: String,
-                        default: '',
-                        require:true, 
-                    } 
-            }
-               
-        }
+                   content:{
+                    type: String,
+                    default: '',
+                    require:true, 
+                   },               
+                }
+            ]  ,
+            updatedAt: { type: Date, default: Date.now }        
+        },    
     ],
-
     collectshop:[
         {
            type:mongoose.Schema.Types.ObjectId,
-           timestamps: {createAt: "createTime", updateAt: "updateTime"},
            ref:'shop'
         }
     ],
     loveshop:[
         {
            type:mongoose.Schema.Types.ObjectId,
-           timestamps: {createAt: "createTime", updateAt: "updateTime"},
            ref:'shop'
         }
     ],
@@ -73,7 +89,6 @@ const user = new mongoose.Schema({
         {
            type:mongoose.Schema.Types.ObjectId,
            timestamps: {createAt: "createTime", updateAt: "updateTime"},
-         
            ref:'shop'
         }
     ],      

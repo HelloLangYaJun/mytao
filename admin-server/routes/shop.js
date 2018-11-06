@@ -25,6 +25,87 @@ router.get('/',(req,res)=>{
       })
     }
   })
+
+  router.get('/type',(req,res)=>{
+    if(req.session.user){
+      shop.find({}).then(data=>{
+        res.json({
+            code: 200,
+            data,
+            msg: '成功'
+        }) 
+      }).catch(err=>{
+        res.json({
+            code: 400,
+            err,
+            msg: '失败'
+        }) 
+      })
+    }
+    else{
+      res.json({
+          code: 400,
+          msg: '未登录'
+      })
+    }
+  })
+
+  //获取某一类
+  router.post('/find',(req,res)=>{
+    let {shoptype,goodstype}=req.body
+    if(req.session.user){
+    let obj={}
+    if(goodstype){
+      obj.goodstype=goodstype
+    }
+    if(shoptype){
+      obj.shoptype=shoptype
+    }
+      shop.find(obj).then(data=>{
+        res.json({
+            code: 200,
+            data,
+            msg: '成功'
+        }) 
+      }).catch(err=>{
+        res.json({
+            code: 400,
+            err,
+            msg: '失败'
+        }) 
+      })
+    }
+    else{
+      res.json({
+          code: 400,
+          msg: '未登录'
+      })
+    }
+  })
+// 搜索框查询（正则查询）
+router.post('/regfind', (req, res) =>{
+             let{findstr}=req.body
+           
+             let a=new RegExp( `^.*${findstr}.*$`)//存在是否存在以传入的title为内容的正则
+             // let a=new RegExp(`^${req.params.title}`)
+             // authorMsg:req.session.user._id
+            shop.find({shopdetail:a}, function (err, data) {
+            if(err){
+                res.json({
+                    code: 401,
+                    msg:'未找到'
+                })
+            }
+            else{
+                res.json({
+                    code: 200,
+                    data
+                })
+            }
+         });
+   
+  })
+
   router.get('/:id',(req,res)=>{
     if(req.session.user){
     //    console.log(req.params.id) 

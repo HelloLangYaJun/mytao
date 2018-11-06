@@ -1,6 +1,8 @@
+
 const {Router} = require("express");
 const router = Router();
 const user = require('../models/user')
+const shop =require('../models/shop')
 router.get('/',(req,res)=>{
   if(req.session.user){
       user.findOne({username:req.session.user.username}).then(data=>{
@@ -20,6 +22,52 @@ router.get('/',(req,res)=>{
 
 })
 
+
+//获取消息
+router.get('/message',(req,res)=>{
+    if(req.session.user){
+        user.findOne({username:req.session.user.username})
+        .select('-password')
+        .then(data=>{
+            for(let i=0;i<data.chat.length;i++){
+               shop.findOne({_id:data.chat[i].objectShop}).then(data1=>{
+                   data.chat[i].shop=data1
+                   user.findOne({_id:data.chat[i].objectFrom}).then(data2=>{
+                    data.chat[i].From=data2
+                    user.findOne({_id:data.chat[i].objectTo}).then(data3=>{
+                        data.chat[i].To=data3
+                        // data.save()
+                        if(i==data.chat.length-1){
+                            back()
+                        }
+                    })
+                })
+               })  
+            }
+            if(!data.chat.length){
+                    res.json({
+                        code: 200,
+                        data,
+                        msg: '没有数据'
+                    })
+            }
+        function back(){
+            res.json({
+                code: 200,
+                data:data,
+                msg: '已登录'
+            })
+        }
+        })
+    }
+  
+    else{
+      res.json({
+          code: 400,
+          msg: '未登录'
+      })
+    }
+  })
 //注册
 router.post('/regist', (req, res) => {
     let {username, password} = req.body;
@@ -52,34 +100,102 @@ router.post('/regist', (req, res) => {
         })
     }
 })
+//添加消息窗口
+router.post('/addchatwin',(req,res)=>{
+    let{fromid,toid,shopid}=req.body
+    if(req.session.user){
+        user.findOne({_id:req.session.user._id}).then(data=>{
+            var flag=true
+            for(let i=0;i<data.chat.length;i++){
+                if(data.chat[i].objectShop==shopid&&data.chat[i].objectFrom==fromid&&data.chat[i].objectTo==toid){
+                    flag=false
+                    res.json({
+                        code: 200,
+                        msg: '存在对话窗口'
+                    }) 
+                    return
+                }
+            }
+            if(flag){
+                data.chat.push({
+                    objectShop:shopid,
+                    objectFrom:fromid,
+                    objectTo:toid,
+                    noLooknum:0,
+                    content:[]
+                })
+                user.findOne({_id:toid}).then(data2=>{
+                    data2.chat.push({
+                        objectShop:shopid,
+                        objectFrom:fromid,
+                        objectTo:toid,
+                        noLooknum:0,
+                        content:[]
+                    })
+                    data.save()
+                    data2.save()
+                    res.json({
+                        code: 200,
+                        msg: '成功新建对话窗口'
+                    }) 
+                })
+            }
+        })
+    }
+    else{
+        res.json({
+            code: 400,
+            msg: '未登录'
+        })   
+    }
+})
+
 
 //添加消息
-router.post('/addchat',(req,res)=>{
+router.post('/addchat', (req,res)=>{
     if(req.session.user){
-       let{userid,shopid,content,type}=req.body
-       let chat={
-        objectshop:shopid,
-        objectuser:userid,
-        content:{
-            type,
-            content,
+       let{fromid,toid,shopid,content,type}=req.body
+       user.findOne({_id:req.session.user._id}).then(data=>{
+       for(let i=0;i<data.chat.length;i++){
+        if(data.chat[i].objectShop==shopid&&data.chat[i].objectFrom==fromid&&data.chat[i].objectTo==toid){
+            data.chat[i].content.push({
+                type,
+                content
+            })
+            data.chat[i].noLooknum+=1,
+            data.save()
+            if(fromid==req.session.user._id){
+                user.findOne({_id:toid}).then(data2=>{
+                    data2.chat[i].content.push({
+                        type:!type,
+                        content
+                    })
+                    data2.chat[i].noLooknum+=1,
+                    data2.save()
+                    res.json({
+                        code: 200,
+                        msg: '发送成功'
+                    })  
+                   })
+            }
+            else{
+                user.findOne({_id:fromid}).then(data2=>{
+                    data2.chat[i].content.push({
+                        type:!type,
+                        content
+                    })
+                    data2.chat[i].noLooknum+=1,
+                    data2.save()
+                    res.json({
+                        code: 200,
+                        msg: '发送成功'
+                    })  
+                   }) 
+            }
+         
         }
        }
-       user.update({_id:userid},{$push:{chat}}).then(data=>{
-           user.update({_id:shopid},{$push:{chat:{
-            objectshop:shopid,
-            objectuser:userid,
-            content:{
-                type:!type,
-                content,
-            }
-           }}}).then(data2=>{
-            res.json({
-                code: 200,
-                data2,
-                msg: '发送成功'
-            }) 
-           })
+
        })
     }
     else{
