@@ -3,7 +3,6 @@ const router = Router();
 const shop = require('../models/shop')
 var axios =require('axios')
 router.get('/',(req,res)=>{
-    if(req.session.user){
       shop.find({}).then(data=>{
         res.json({
             code: 200,
@@ -17,17 +16,10 @@ router.get('/',(req,res)=>{
             msg: '失败'
         }) 
       })
-    }
-    else{
-      res.json({
-          code: 400,
-          msg: '未登录'
-      })
-    }
   })
 
   router.get('/type',(req,res)=>{
-    if(req.session.user){
+ 
       shop.find({}).then(data=>{
         res.json({
             code: 200,
@@ -41,19 +33,13 @@ router.get('/',(req,res)=>{
             msg: '失败'
         }) 
       })
-    }
-    else{
-      res.json({
-          code: 400,
-          msg: '未登录'
-      })
-    }
+    
   })
 
   //获取某一类
   router.post('/find',(req,res)=>{
     let {shoptype,goodstype}=req.body
-    if(req.session.user){
+    
     let obj={}
     if(goodstype){
       obj.goodstype=goodstype
@@ -74,13 +60,6 @@ router.get('/',(req,res)=>{
             msg: '失败'
         }) 
       })
-    }
-    else{
-      res.json({
-          code: 400,
-          msg: '未登录'
-      })
-    }
   })
 // 搜索框查询（正则查询）
 router.post('/regfind', (req, res) =>{
@@ -107,7 +86,7 @@ router.post('/regfind', (req, res) =>{
   })
 
   router.get('/:id',(req,res)=>{
-    if(req.session.user){
+  
     //    console.log(req.params.id) 
       shop.findOne({_id:req.params.id}).then(data=>{
         res.json({
@@ -122,13 +101,7 @@ router.post('/regfind', (req, res) =>{
             msg: '失败'
         }) 
       })
-    }
-    else{
-      res.json({
-          code: 400,
-          msg: '未登录'
-      })
-    }
+    
   })
   
   router.post('/add',(req,res)=>{

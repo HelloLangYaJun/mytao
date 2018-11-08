@@ -89,7 +89,13 @@
     },
     methods:{
       gomessage(){
-        this.$router.push('/message')
+        if( this.islogin==false){
+          this.$router.push('/login')
+        }
+        else {
+          this.$router.push('/message')
+        }
+
       },
       getlogin(){
         this.$axios.get('/user').then(res=>{
